@@ -1,15 +1,50 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
+using StudentPlanner.Application.Common;
+using StudentPlanner.Domain;
+using StudentPlanner.Domain.Models.Dto;
 
 namespace StudentPlanner.Application.Commands;
 
-public class SignUpCommand : IRequest<Unit>
+public class SignUpCommand : IRequest<AuthResult>
 {
+    public string Email { get; set; }
+    public string Password { get; set; }
 }
 
-public class SignUpCommandHandler : IRequestHandler<SignUpCommand, Unit>
+public class SignUpCommandHandler : AuthBaseHandler, IRequestHandler<SignUpCommand, AuthResult>
 {
-    public Task<Unit> Handle(SignUpCommand request, CancellationToken cancellationToken)
+    private readonly UserManager<User> _userManager;
+
+    public SignUpCommandHandler(UserManager<User> userManager, IConfiguration configuration) : base(configuration)
     {
-        return Unit.Task;
+        _userManager = userManager;
+    }
+
+    public async Task<AuthResult> Handle(SignUpCommand request, CancellationToken cancellationToken)
+    {
+        var user = new User()
+        {
+            Email = request.Email,
+            UserName = request.Email.Split('@').ElementAtOrDefault(0)
+        };
+
+        var createdUser = await _userManager.CreateAsync(user, password:request.Password);
+
+        if (!createdUser.Succeeded)
+        {
+            return new AuthResult
+            {
+                Errors = createdUser.Errors.Select(x => x.Description),
+                Success = false
+            };
+        }
+
+        return new AuthResult
+        {
+            Success = true,
+            Token = CreateJwtToken(user),
+        };
     }
 }

@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="FluentValidation" Version="11.5.1" />
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.5.1" />
+    <PackageReference Include="MediatR" Version="12.0.1" />
+    <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="11.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.15" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.15">
       <PrivateAssets>all</PrivateAssets>
@@ -19,6 +23,7 @@
     <ProjectReference Include="..\StudentPlanner.Application\StudentPlanner.Application.csproj" />
     <ProjectReference Include="..\StudentPlanner.Domain\StudentPlanner.Domain.csproj" />
     <ProjectReference Include="..\StudentPlanner.Infrastructure\StudentPlanner.Infrastructure.csproj" />
+    <ProjectReference Include="..\StudentPlanner.Shared\StudentPlanner.Shared.csproj" />
   </ItemGroup>
 
 </Project>

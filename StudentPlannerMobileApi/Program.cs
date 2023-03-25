@@ -1,16 +1,18 @@
+using System.Reflection;
 using System.Text;
+using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using StudentPlanner.Infrastructure;
-
 using StudentPlanner.Application;
+using StudentPlanner.Shared;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
 var configurations = builder.Configuration;
-
-
+services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 services.AddControllers();
+services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
 services.AddApplication(configurations);
 services.AddInfrastructure(configurations);
 services.AddEndpointsApiExplorer();
@@ -26,9 +28,9 @@ services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateAudience = true,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            ValidIssuer = "StudentPlanner-issuer",
-            ValidAudience = "StudentPlanner-audience",
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("StudentPlanner-secret-key"))
+            ValidIssuer = configurations["JwtTokenIssuer"],
+            ValidAudience = configurations["JwtTokenAudience"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configurations["JwtTokenKey"]))
         };
     });
 

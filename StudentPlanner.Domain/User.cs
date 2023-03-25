@@ -2,7 +2,7 @@
 
 namespace StudentPlanner.Domain
 {
-    public class User : IdentityUser
+    public class User : IdentityUser<Guid>
     {
 
     }
