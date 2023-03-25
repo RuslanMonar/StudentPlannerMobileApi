@@ -1,13 +1,15 @@
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
-namespace StudentPlannerMobileApi.Controllers
-{
-    [ApiController]
-    [Route("api/contacts/[controller]")]
-    public class ApiController : ControllerBase
-    {
-        /*private IMediator _mediator;
+namespace StudentPlannerMobileApi.Controllers;
 
-        protected IMediator Mediator => _mediator ??= HttpContext.RequestServices.GetService<IMediator>();*/
-    }
+[ApiController]
+[Route("api/studentplanner/[controller]")]
+public class ApiController : ControllerBase
+{
+#pragma warning disable CS8618
+    private IMediator _mediator;
+#pragma warning restore CS8618
+
+    protected IMediator Mediator => (_mediator ??= HttpContext.RequestServices.GetService<IMediator>()!)!;
 }

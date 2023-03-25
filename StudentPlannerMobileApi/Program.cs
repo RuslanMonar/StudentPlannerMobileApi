@@ -1,15 +1,41 @@
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using StudentPlanner.Infrastructure;
+
+using StudentPlanner.Application;
+
 var builder = WebApplication.CreateBuilder(args);
+var services = builder.Services;
+var configurations = builder.Configuration;
 
-// Add services to the container.
 
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+services.AddControllers();
+services.AddApplication(configurations);
+services.AddInfrastructure(configurations);
+services.AddEndpointsApiExplorer();
+services.AddSwaggerGen();
+
+
+services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = "StudentPlanner-issuer",
+            ValidAudience = "StudentPlanner-audience",
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("StudentPlanner-secret-key"))
+        };
+    });
 
 var app = builder.Build();
+app.UseAuthentication();
 
-// Configure the HTTP request pipeline.
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
