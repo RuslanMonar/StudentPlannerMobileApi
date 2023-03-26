@@ -15,11 +15,9 @@ public class SignUpCommand : IRequest<AuthResult>
 
 public class SignUpCommandHandler : AuthBaseHandler, IRequestHandler<SignUpCommand, AuthResult>
 {
-    private readonly UserManager<User> _userManager;
-
-    public SignUpCommandHandler(UserManager<User> userManager, IConfiguration configuration) : base(configuration)
+    public SignUpCommandHandler(UserManager<User> userManager, IConfiguration configuration) : base(configuration, userManager)
     {
-        _userManager = userManager;
+
     }
 
     public async Task<AuthResult> Handle(SignUpCommand request, CancellationToken cancellationToken)

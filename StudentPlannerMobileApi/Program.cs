@@ -10,16 +10,23 @@ using StudentPlanner.Shared;
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
 var configurations = builder.Configuration;
-services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+
+
 services.AddControllers();
-services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
+
 services.AddApplication(configurations);
 services.AddInfrastructure(configurations);
+services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGen();
 
 
-services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+services.AddAuthentication(options =>
+    {
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
     .AddJwtBearer(options =>
     {
         options.TokenValidationParameters = new TokenValidationParameters
@@ -33,6 +40,19 @@ services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configurations["JwtTokenKey"]))
         };
     });
+
+services.AddCors(options =>
+{
+    options.AddPolicy(name: "localhostOrigins",
+        policy =>
+        {
+            policy
+                .WithOrigins("https://localhost:4200")
+                .AllowCredentials()
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+        });
+});
 
 var app = builder.Build();
 app.UseAuthentication();

@@ -16,14 +16,9 @@ public static class DependencyInjection
         services.AddDbContext<StudentPlannerContext>(options =>
             options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
 
-        services.AddIdentityCore<User>()
-            .AddRoles<IdentityRole<Guid>>()
-            .AddEntityFrameworkStores<StudentPlannerContext>();
-
-        services.Configure<ApiBehaviorOptions>(options =>
-        {
-            options.SuppressModelStateInvalidFilter = true;
-        });
+        services.AddIdentity<User, IdentityRole<Guid>>()
+            .AddEntityFrameworkStores<StudentPlannerContext>()
+            .AddDefaultTokenProviders();
 
         services.AddScoped<IStudentPlannerContext, StudentPlannerContext>();
 

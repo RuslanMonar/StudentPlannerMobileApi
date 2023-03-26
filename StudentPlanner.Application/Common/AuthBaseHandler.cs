@@ -1,6 +1,7 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using StudentPlanner.Domain;
@@ -10,10 +11,12 @@ namespace StudentPlanner.Application.Common;
 public class AuthBaseHandler
 {
     private readonly IConfiguration _configuration;
+    protected readonly UserManager<User> _userManager;
 
-    public AuthBaseHandler(IConfiguration configuration)
+    public AuthBaseHandler(IConfiguration configuration, UserManager<User> userManager)
     {
         _configuration = configuration;
+        _userManager = userManager;
     }
 
     protected string CreateJwtToken(User user)
