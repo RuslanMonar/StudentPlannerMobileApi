@@ -41,22 +41,31 @@ services.AddAuthentication(options =>
         };
     });
 
-services.AddCors(options =>
+// services.AddCors(options =>
+// {
+//     options.AddPolicy(name: "localhostOrigins",
+//         policy =>
+//         {
+//             policy
+//                 .WithOrigins("*")
+//                 .AllowCredentials()
+//                 .AllowAnyHeader()
+//                 .AllowAnyMethod();
+//         });
+// });
+
+services.AddCors(Opt =>
 {
-    options.AddPolicy(name: "localhostOrigins",
-        policy =>
-        {
-            policy
-                .WithOrigins("https://localhost:4200")
-                .AllowCredentials()
-                .AllowAnyHeader()
-                .AllowAnyMethod();
-        });
+    Opt.AddPolicy("localhostOrigins", policy =>
+    {
+        policy.AllowAnyMethod().AllowAnyHeader().AllowAnyOrigin();
+    });
 });
 
 var app = builder.Build();
 app.UseAuthentication();
 
+app.UseCors("localhostOrigins");
 
 if (app.Environment.IsDevelopment())
 {

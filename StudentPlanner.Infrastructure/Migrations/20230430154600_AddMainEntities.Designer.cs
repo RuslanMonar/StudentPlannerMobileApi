@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using StudentPlanner.Infrastructure.Data;
@@ -11,9 +12,10 @@ using StudentPlanner.Infrastructure.Data;
 namespace StudentPlanner.Infrastructure.Migrations
 {
     [DbContext(typeof(StudentPlannerContext))]
-    partial class StudentPlannerContextModelSnapshot : ModelSnapshot
+    [Migration("20230430154600_AddMainEntities")]
+    partial class AddMainEntities
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -165,9 +167,6 @@ namespace StudentPlanner.Infrastructure.Migrations
 
                     b.Property<string>("Title")
                         .HasColumnType("text");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
