@@ -1,4 +1,6 @@
-﻿namespace StudentPlanner.Domain.Entities;
+﻿using System.Text.Json.Serialization;
+
+namespace StudentPlanner.Domain.Entities;
 
 public class Project
 {
@@ -8,5 +10,6 @@ public class Project
     public int FolderId { get; set; }
     public Folder Folder { get; set; }
 
+    [JsonIgnore]
     public List<ProjectTask> ProjectTasks { get; set; }
 }

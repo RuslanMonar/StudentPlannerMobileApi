@@ -23,6 +23,7 @@ public class AuthBaseHandler
     {
         var tokenHandler = new JwtSecurityTokenHandler();
         var key = Encoding.ASCII.GetBytes(_configuration["JwtTokenKey"]);
+        var audience = _configuration["JwtTokenAudience"];
 
         var tokenDescriptor = new SecurityTokenDescriptor
         {
@@ -33,7 +34,8 @@ public class AuthBaseHandler
                 new (ClaimTypes.Email, user.Email)
             }),
             Expires = DateTime.UtcNow.AddDays(7),
-            SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
+            Audience = audience
         };
 
         var token = tokenHandler.CreateToken(tokenDescriptor);

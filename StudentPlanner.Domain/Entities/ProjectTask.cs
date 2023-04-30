@@ -1,8 +1,11 @@
-﻿namespace StudentPlanner.Domain.Entities;
+﻿using System.Text.Json.Serialization;
+
+namespace StudentPlanner.Domain.Entities;
 
 public class ProjectTask
 {
     public int Id { get; set; }
+    [JsonIgnore]
     public Guid UserId { get; set; }
     public string Title { get; set; }
     public int TomatoCount { get; set; }
