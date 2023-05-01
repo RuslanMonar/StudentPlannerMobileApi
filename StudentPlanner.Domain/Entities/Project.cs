@@ -8,6 +8,7 @@ public class Project
     public string Title { get; set; }
     public string Color { get; set; }
     public int FolderId { get; set; }
+    public Guid UserId { get; set; }
     public Folder Folder { get; set; }
 
     [JsonIgnore]

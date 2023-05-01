@@ -3,15 +3,16 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using StudentPlanner.Application.Interfaces.Infrastructure;
 using StudentPlanner.Domain.Entities;
+using StudentPlanner.Domain.Models.Dto;
 using StudentPlanner.Shared.Extensions;
 
 namespace StudentPlanner.Application.Queries;
 
-public class GetFoldersQuery : IRequest<List<Folder>>
+public class GetFoldersQuery : IRequest<List<FolderWithProjectsDto>>
 {
 }
 
-public class GetFoldersRequestHandler : IRequestHandler<GetFoldersQuery, List<Folder>>
+public class GetFoldersRequestHandler : IRequestHandler<GetFoldersQuery, List<FolderWithProjectsDto>>
 {
     private readonly IStudentPlannerContext _dbContext;
     private readonly IHttpContextAccessor _httpContextAccessor;
@@ -22,12 +23,27 @@ public class GetFoldersRequestHandler : IRequestHandler<GetFoldersQuery, List<Fo
         _httpContextAccessor = httpContextAccessor;
     }
 
-    public async Task<List<Folder>> Handle(GetFoldersQuery request, CancellationToken cancellationToken)
+    public async Task<List<FolderWithProjectsDto>> Handle(GetFoldersQuery request, CancellationToken cancellationToken)
     {
         var userId = _httpContextAccessor.HttpContext!.GetUserId();
 
-        var folders = await _dbContext.Folders.Where(f => f.UserId == userId)
-            .ToListAsync(cancellationToken: cancellationToken);
+        var folders = await _dbContext.Folders
+            .Include(f => f.Projects)
+            .Select(f => new FolderWithProjectsDto
+            {
+                Id = f.Id,
+                Title = f.Title,
+                Color = f.Color,
+                Projects = f.Projects.Select(p => new Project
+                {
+                    Id = p.Id,
+                    Title = p.Title,
+                    Color = p.Color
+                }).ToList()
+            })
+            .ToListAsync(cancellationToken);
+
+
         return folders;
     }
 }

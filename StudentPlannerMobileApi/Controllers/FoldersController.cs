@@ -2,6 +2,7 @@
 using StudentPlanner.Application.Commands;
 using StudentPlanner.Application.Queries;
 using StudentPlanner.Domain.Entities;
+using StudentPlanner.Domain.Models.Dto;
 
 namespace StudentPlannerMobileApi.Controllers;
 
@@ -15,7 +16,7 @@ public class FoldersController : ApiController
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<Folder>>> GetAllFolders()
+    public async Task<ActionResult<List<FolderWithProjectsDto>>> GetAllFolders()
     {
         var request = new GetFoldersQuery();
         var folders = await Mediator.Send(request);
