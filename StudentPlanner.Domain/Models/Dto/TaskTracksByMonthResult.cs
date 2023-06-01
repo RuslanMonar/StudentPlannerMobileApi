@@ -13,4 +13,7 @@ public class TaskTracksByMonthResult
 
     public List<string> ProjectTaskNames { get; set; }
     public List<double> ProjectTaskTime { get; set; }
+
+    public List<string> ProjectNames { get; set; }
+    public List<double> ProjectTime { get; set; }
 }

@@ -3,6 +3,7 @@ using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using StudentPlanner.Application.Interfaces.Infrastructure;
+using StudentPlanner.Domain.Entities;
 using StudentPlanner.Domain.Models.Dto;
 using StudentPlanner.Shared.Extensions;
 
@@ -54,12 +55,35 @@ public class GetTaskTracksRequestHandler : IRequestHandler<GetTaskTracksByMonthQ
         var projectTaskNames = projectTaskList.Select(pt => pt.ProjectTask).ToList();
         var projectTaskTime = projectTaskList.Select(pt => pt.TimeSpentInMinutes / 60.0).ToList();
 
+        var projects = GetProjectsWithTaskTracks();
+        var projectHours = new Dictionary<string, double>();
+
+        foreach (var project in projects)
+        {
+            int totalHours = 0;
+            foreach (var task in project.ProjectTasks)
+            {
+                foreach (var track in task.TaskTracks)
+                {
+                    totalHours += track.TimeSpentInMinutes / 60; // Assuming TimeSpentInMinutes is in minutes
+                }
+            }
+
+            projectHours.Add(project.Title, totalHours);
+        }
+
+        // Now you can retrieve the project titles and corresponding hours
+        var projectNames = projectHours.Keys.ToList();
+        var projectTime = projectHours.Values.ToList();
+
         var result = new TaskTracksByMonthResult
         {
             Monthes = months,
             SpentMonthHours = hours,
             ProjectTaskNames = projectTaskNames,
-            ProjectTaskTime = projectTaskTime
+            ProjectTaskTime = projectTaskTime,
+            ProjectNames = projectNames,
+            ProjectTime = projectTime
         };
 
         return result;
@@ -72,5 +96,14 @@ public class GetTaskTracksRequestHandler : IRequestHandler<GetTaskTracksByMonthQ
             MonthNames = new[] { "", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" }
         };
         return englishDateTimeFormat.GetMonthName((monthIndex - 1) % 12 + 1);
+    }
+
+    private List<Project> GetProjectsWithTaskTracks()
+    {
+        return _dbContext.Projects
+                .Include(p => p.ProjectTasks)
+                .ThenInclude(pt => pt.TaskTracks)
+                .ToList();
+        
     }
 }
