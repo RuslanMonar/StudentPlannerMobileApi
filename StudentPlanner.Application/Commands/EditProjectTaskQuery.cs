@@ -15,6 +15,7 @@ public class EditProjectTaskQuery : IRequest
     public string Flag { get; set; }
     public DateTime Date { get; set; }
     public string? Description { get; set; }
+    public int TimeCompleted { get; set; } = 0;
 }
 
 public class EditProjectTaskQueryHandler : IRequestHandler<EditProjectTaskQuery>
@@ -30,7 +31,8 @@ public class EditProjectTaskQueryHandler : IRequestHandler<EditProjectTaskQuery>
 
     public async Task Handle(EditProjectTaskQuery request, CancellationToken cancellationToken)
     {
-        var userId = _httpContextAccessor.HttpContext!.GetUserId();
+       // var userId = _httpContextAccessor.HttpContext!.GetUserId();
+       var userId = new Guid("9542147e-4353-4a17-a172-15b34c60f9c0");
 
         var task = await _dbContext.Tasks.FirstOrDefaultAsync(x => x.UserId == userId && x.Id == request.TaskId, cancellationToken: cancellationToken);
 
@@ -45,6 +47,11 @@ public class EditProjectTaskQueryHandler : IRequestHandler<EditProjectTaskQuery>
         task.Date = request.Date;
         task.Description = request.Description;
         task.ProjectId = request.ProjectId;
+
+        if (request.TimeCompleted != 0)
+        {
+            task.TimeCompleted += request.TimeCompleted;
+        } 
 
         await _dbContext.SaveChangesAsync(cancellationToken);
     }

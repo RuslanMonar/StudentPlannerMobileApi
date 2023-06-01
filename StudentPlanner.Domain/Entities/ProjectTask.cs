@@ -21,4 +21,5 @@ public class ProjectTask
 
     public int ProjectId { get; set; }
     public Project Project { get; set; }
+    public List<TaskTrack> TaskTracks { get; set; }
 }
